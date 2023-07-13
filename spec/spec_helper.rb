@@ -25,7 +25,7 @@ require "httpx"
 require "net/http"
 require "patron"
 
-HTTPInstrumentation.instrument!
+HTTPInstrumentation.initialize! unless defined?(Rails)
 
 RSpec.configure do |config|
   config.order = :random
@@ -53,16 +53,16 @@ TEST_URL = "http://localhost:8971/test"
 
 def test_http_request
   response = nil
-  payloads = capture_notifications("request.http") do
+  payloads = capture_notifications do
     response = yield
   end
   [response, payloads]
 end
 
-def capture_notifications(notification)
+def capture_notifications
   payloads = []
 
-  subscription = ActiveSupport::Notifications.subscribe(notification) do |name, start, finish, id, payload|
+  subscription = ActiveSupport::Notifications.subscribe("request.http") do |name, start, finish, id, payload|
     payloads << payload
   end
 

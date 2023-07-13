@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe HTTPInstrumentation::Instrumentation::HTTPXImpl do
+describe HTTPInstrumentation::Instrumentation::HTTPXHook do
   let(:url) { TEST_URL }
 
   it "instruments GET requests" do

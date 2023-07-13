@@ -2,7 +2,7 @@
 
 module HTTPInstrumentation
   module Instrumentation
-    module EthonImpl
+    module EthonHook
       class << self
         def instrument!
           Instrumentation.instrument!(::Ethon::Easy, Easy) if defined?(::Ethon::Easy)
@@ -12,15 +12,11 @@ module HTTPInstrumentation
 
       module Multi
         def perform(*)
-          retval = nil
+          HTTPInstrumentation.instrument("ethon") do |payload|
+            payload[:count] = easy_handles.size
 
-          payload = {count: easy_handles.size, client: "ethon"}
-
-          ActiveSupport::Notifications.instrument("request.http", payload) do
-            retval = super
+            super
           end
-
-          retval
         end
       end
 
@@ -31,16 +27,15 @@ module HTTPInstrumentation
         end
 
         def perform(*)
-          retval = nil
-
-          payload = {method: Instrumentation.normalize_http_method(@http_method), url: url.to_s, client: "ethon"}
-
-          ActiveSupport::Notifications.instrument("request.http", payload) do
+          HTTPInstrumentation.instrument("ethon") do |payload|
             retval = super
-            payload[:status] = response_code
-          end
 
-          retval
+            payload[:method] = @http_method
+            payload[:url] = url
+            payload[:status] = response_code
+
+            retval
+          end
         end
       end
     end

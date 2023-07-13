@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe HTTPInstrumentation::Instrumentation::EthonImpl do
+describe HTTPInstrumentation::Instrumentation::EthonHook do
   let(:url) { TEST_URL }
 
   it "instruments GET requests" do

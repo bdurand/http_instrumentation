@@ -2,7 +2,7 @@
 
 module HTTPInstrumentation
   module Instrumentation
-    module PatronImpl
+    module PatronHook
       class << self
         def instrument!
           Instrumentation.instrument!(::Patron::Session, self) if defined?(::Patron::Session)
@@ -12,16 +12,15 @@ module HTTPInstrumentation
       private
 
       def request(action, url, *args)
-        response = nil
-
-        payload = {method: Instrumentation.normalize_http_method(action), url: url.to_s, client: "patron"}
-
-        ActiveSupport::Notifications.instrument("request.http", payload) do
+        HTTPInstrumentation.instrument("patron") do |payload|
           response = super
-          payload[:status] = response.status
-        end
 
-        response
+          payload[:method] = action
+          payload[:url] = url
+          payload[:status] = response.status
+
+          response
+        end
       end
     end
   end

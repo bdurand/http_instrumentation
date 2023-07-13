@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe HTTPInstrumentation::Instrumentation::CurbImpl do
+describe HTTPInstrumentation::Instrumentation::CurbHook do
   let(:url) { TEST_URL }
 
   it "instruments GET requests" do
