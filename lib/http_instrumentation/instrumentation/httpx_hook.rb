@@ -2,6 +2,7 @@
 
 module HTTPInstrumentation
   module Instrumentation
+    # This module is responsible for instrumenting the httpx gem.
     module HTTPXHook
       class << self
         def instrument!

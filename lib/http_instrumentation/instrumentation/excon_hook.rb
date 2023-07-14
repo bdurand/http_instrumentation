@@ -2,6 +2,7 @@
 
 module HTTPInstrumentation
   module Instrumentation
+    # This module is used to instrument the excon gem.
     module ExconHook
       class << self
         def instrument!

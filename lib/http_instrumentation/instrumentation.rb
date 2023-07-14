@@ -13,6 +13,7 @@ require_relative "instrumentation/typhoeus_hook"
 module HTTPInstrumentation
   module Instrumentation
     class << self
+      # Helper method to prepend an instrumentation module to a class.
       def instrument!(klass, instrumentation_module)
         klass.prepend(instrumentation_module) unless klass.include?(instrumentation_module)
       end

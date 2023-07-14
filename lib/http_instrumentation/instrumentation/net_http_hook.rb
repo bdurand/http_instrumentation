@@ -2,6 +2,7 @@
 
 module HTTPInstrumentation
   module Instrumentation
+    # This module is responsible for instrumenting the net/http module in the standard library.
     module NetHTTPHook
       class << self
         def instrument!

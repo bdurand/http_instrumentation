@@ -2,6 +2,7 @@
 
 module HTTPInstrumentation
   module Instrumentation
+    # This module is responsible for instrumenting the http gem.
     module HTTPHook
       class << self
         def instrument!

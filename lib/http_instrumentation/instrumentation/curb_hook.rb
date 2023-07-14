@@ -2,6 +2,7 @@
 
 module HTTPInstrumentation
   module Instrumentation
+    # This module is responsible for instrumenting the curb gem.
     module CurbHook
       class << self
         def instrument!

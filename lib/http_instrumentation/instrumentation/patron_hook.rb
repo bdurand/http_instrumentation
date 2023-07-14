@@ -2,6 +2,7 @@
 
 module HTTPInstrumentation
   module Instrumentation
+    # This module is responsible for instrumenting the patron gem.
     module PatronHook
       class << self
         def instrument!

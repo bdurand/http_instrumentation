@@ -20,6 +20,13 @@ module HTTPInstrumentation
   EVENT = "request.http"
 
   class << self
+    # Add instrumentation into HTTP client libraries. By default all supported
+    # libraries are instrumented. You can pass the only or except options
+    # to limit the instrumentation to a subset of libraries.
+    #
+    # @param only [Array<Symbol>] List of libraries to instrument.
+    # @param except [Array<Symbol>] List of libraries to not instrument.
+    # @return [void]
     def initialize!(only: nil, except: nil)
       list = (only || IMPLEMENTATIONS)
       list &= Array(except) if except
@@ -35,6 +42,9 @@ module HTTPInstrumentation
       Instrumentation::TyphoeusHook.instrument! if list.include?(:typhoeus)
     end
 
+    # Silence instrumentation for the duration of the block.
+    #
+    # @return [Object] the return value of the block
     def silence(&block)
       save_val = Thread.current[:http_instrumentation_silence]
       begin
@@ -45,10 +55,25 @@ module HTTPInstrumentation
       end
     end
 
+    # Returns true if instrumentation is currently silenced.
+    #
+    # @return [Boolean]
     def silenced?
       !!Thread.current[:http_instrumentation_silence]
     end
 
+    # Instrument the given block with the given client name. An ActiveSupport event will be
+    # fired with the following payload:
+    #
+    # * `:client` - The name of the client as a string.
+    # * `:http_method` - The HTTP method as a lowercase symbol.
+    # * `:url` - The URL as a string.
+    # * `:uri` - The URL as a URI object.
+    # * `:status_code` - The HTTP status code as an integer.
+    # * `:count` - The number of requests made as an integer.
+    #
+    # @param client [String, Symbol] The name of the client.
+    # @return [Object] the return value of the block
     def instrument(client, &block)
       payload = {client: client.to_s}
 
@@ -79,11 +104,16 @@ module HTTPInstrumentation
 
     private
 
+    # Turn the given value into a lowercase symbol.
     def normalize_http_method(method)
       return nil if method.nil?
       method.to_s.downcase.to_sym
     end
 
+    # Remove any sensitive information from the given URL. Also normalizes
+    # the host and protocol by downcasing them.
+    #
+    # @param url [URI] the sanitized URL
     def sanitized_uri(url)
       return nil if url.nil?
 

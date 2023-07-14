@@ -2,6 +2,7 @@
 
 module HTTPInstrumentation
   module Instrumentation
+    # This module is responsible for instrumenting the typhoeus gem.
     module TyphoeusHook
       class << self
         def instrument!

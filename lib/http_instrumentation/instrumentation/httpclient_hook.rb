@@ -3,6 +3,7 @@
 module HTTPInstrumentation
   module Instrumentation
     module HTTPClientHook
+      # This module is responsible for instrumenting the httpclient gem.
       class << self
         def instrument!
           Instrumentation.instrument!(::HTTPClient, self) if defined?(::HTTPClient)
