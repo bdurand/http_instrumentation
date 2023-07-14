@@ -15,9 +15,9 @@ module HTTPInstrumentation
 
           scheme = response.scheme&.downcase
           default_port = ((scheme == "https") ? 443 : 80)
-          payload[:method] = response.http_method
+          payload[:http_method] = response.http_method
           payload[:url] = "#{scheme}://#{response.host}#{":#{response.port}" unless response.port == default_port}#{response.path}#{"?#{response.query}" unless response.query.to_s.empty?}"
-          payload[:status] = response.status
+          payload[:status_code] = response.status
 
           response
         end

@@ -16,15 +16,6 @@ Bundler.require(:default, :test)
 
 require "active_support"
 
-require "curb"
-require "ethon"
-require "excon"
-require "http"
-require "httpclient"
-require "httpx"
-require "net/http"
-require "patron"
-
 HTTPInstrumentation.initialize! unless defined?(Rails)
 
 RSpec.configure do |config|
@@ -62,8 +53,9 @@ end
 def capture_notifications
   payloads = []
 
-  subscription = ActiveSupport::Notifications.subscribe("request.http") do |name, start, finish, id, payload|
-    payloads << payload
+  subscription = ActiveSupport::Notifications.subscribe("request.http") do |*args|
+    event = ActiveSupport::Notifications::Event.new(*args)
+    payloads << event.payload
   end
 
   yield

@@ -9,6 +9,11 @@ gem "http"
 gem "httpclient"
 gem "httpx"
 gem "patron"
+gem "typhoeus"
+
+gem "faraday"
+gem "httparty"
+gem "rest-client"
 
 gem "rspec", "~> 3.0"
 gem "webrick"

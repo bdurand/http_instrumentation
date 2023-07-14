@@ -13,9 +13,9 @@ module HTTPInstrumentation
         HTTPInstrumentation.instrument("curb") do |payload|
           retval = super
 
-          payload[:method] = method
+          payload[:http_method] = method
           payload[:url] = url
-          payload[:status] = status
+          payload[:status_code] = response_code
 
           retval
         end

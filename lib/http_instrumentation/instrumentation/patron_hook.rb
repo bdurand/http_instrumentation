@@ -15,9 +15,9 @@ module HTTPInstrumentation
         HTTPInstrumentation.instrument("patron") do |payload|
           response = super
 
-          payload[:method] = action
+          payload[:http_method] = action
           payload[:url] = url
-          payload[:status] = response.status
+          payload[:status_code] = response.status
 
           response
         end

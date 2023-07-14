@@ -23,6 +23,7 @@ module HTTPInstrumentation
       module Easy
         def http_request(url, action_name, *args)
           @http_method = action_name
+          @http_url = url
           super
         end
 
@@ -30,9 +31,9 @@ module HTTPInstrumentation
           HTTPInstrumentation.instrument("ethon") do |payload|
             retval = super
 
-            payload[:method] = @http_method
-            payload[:url] = url
-            payload[:status] = response_code
+            payload[:http_method] = @http_method
+            payload[:url] = @http_url
+            payload[:status_code] = response_code
 
             retval
           end

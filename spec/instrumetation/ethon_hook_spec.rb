@@ -13,7 +13,7 @@ describe HTTPInstrumentation::Instrumentation::EthonHook do
       easy
     end
     expect(response.response_body).to eq("GET OK")
-    expect(notifications).to eq [{method: :get, url: url, status: 200, client: "ethon"}]
+    expect(notifications).to eq [{http_method: :get, url: url, uri: URI(url), status_code: 200, count: 1, client: "ethon"}]
   end
 
   it "instruments POST requests" do
@@ -24,7 +24,7 @@ describe HTTPInstrumentation::Instrumentation::EthonHook do
       easy
     end
     expect(response.response_body).to eq("POST OK")
-    expect(notifications).to eq [{method: :post, url: url, status: 200, client: "ethon"}]
+    expect(notifications).to eq [{http_method: :post, url: url, uri: URI(url), status_code: 200, count: 1, client: "ethon"}]
   end
 
   it "instruments a count for concurrent requests" do

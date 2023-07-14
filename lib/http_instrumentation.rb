@@ -13,7 +13,8 @@ module HTTPInstrumentation
     :httpclient,
     :httpx,
     :net_http,
-    :patron
+    :patron,
+    :typhoeus
   ].freeze
 
   EVENT = "request.http"
@@ -31,6 +32,7 @@ module HTTPInstrumentation
       Instrumentation::HTTPXHook.instrument! if list.include?(:httpx)
       Instrumentation::NetHTTPHook.instrument! if list.include?(:net_http)
       Instrumentation::PatronHook.instrument! if list.include?(:patron)
+      Instrumentation::TyphoeusHook.instrument! if list.include?(:typhoeus)
     end
 
     def silence(&block)
@@ -53,12 +55,23 @@ module HTTPInstrumentation
       return yield(payload) if silenced?
 
       ActiveSupport::Notifications.instrument(EVENT, payload) do
-        retval = yield(payload)
+        retval = silence { yield(payload) }
 
-        payload[:method] = normalize_http_method(payload[:method]) if payload.include?(:method)
-        payload[:url] = sanitize_url(payload[:url]) if payload.include?(:url)
-        payload[:status] = payload[:status]&.to_i if payload.include?(:status)
-        payload[:count] = payload[:count]&.to_i if payload.include?(:count)
+        payload[:http_method] = normalize_http_method(payload[:http_method]) if payload.include?(:http_method)
+
+        if payload.include?(:url)
+          uri = sanitized_uri(payload[:url])
+          if uri
+            payload[:url] = uri.to_s
+            payload[:uri] = uri
+          else
+            payload[:url] = payload[:url]&.to_s
+          end
+        end
+
+        payload[:status_code] = payload[:status_code]&.to_i if payload.include?(:status_code)
+
+        payload[:count] = (payload.include?(:count) ? payload[:count].to_i : 1)
 
         retval
       end
@@ -71,25 +84,31 @@ module HTTPInstrumentation
       method.to_s.downcase.to_sym
     end
 
-    def sanitize_url(url)
+    def sanitized_uri(url)
       return nil if url.nil?
 
       begin
         uri = URI(url.to_s)
-
-        uri.password = nil if uri.respond_to?(:password=)
-        uri.user = nil if uri.respond_to?(:user=)
-
-        if uri.respond_to?(:query=) && uri.query
-          params = URI.decode_www_form(uri.query)
-          params.reject! { |name, value| name == "access_token" }
-          uri.query = (params.empty? ? nil : URI.encode_www_form(params))
-        end
-
-        uri.to_s
       rescue URI::Error
-        url.to_s
+        return nil
       end
+
+      uri.password = nil
+      uri.user = nil
+      uri.host = uri.host&.downcase
+
+      if uri.respond_to?(:query=) && uri.query
+        params = nil
+        begin
+          params = URI.decode_www_form(uri.query)
+        rescue
+          params = {}
+        end
+        params.reject! { |name, value| name == "access_token" }
+        uri.query = (params.empty? ? nil : URI.encode_www_form(params))
+      end
+
+      uri
     end
   end
 end

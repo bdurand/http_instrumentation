@@ -13,9 +13,9 @@ module HTTPInstrumentation
         HTTPInstrumentation.instrument("httpclient") do |payload|
           response = super
 
-          payload[:method] = request.header.request_method
+          payload[:http_method] = request.header.request_method
           payload[:url] = request.header.request_uri
-          payload[:status] = response.header.status_code
+          payload[:status_code] = response.header.status_code
 
           response
         end

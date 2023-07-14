@@ -13,9 +13,9 @@ module HTTPInstrumentation
         HTTPInstrumentation.instrument("http") do |payload|
           response = super
 
-          payload[:method] = request.verb
+          payload[:http_method] = request.verb
           payload[:url] = request.uri
-          payload[:status] = response.status
+          payload[:status_code] = response.status
 
           response
         end

@@ -8,6 +8,7 @@ require_relative "instrumentation/http_hook"
 require_relative "instrumentation/httpx_hook"
 require_relative "instrumentation/net_http_hook"
 require_relative "instrumentation/patron_hook"
+require_relative "instrumentation/typhoeus_hook"
 
 module HTTPInstrumentation
   module Instrumentation

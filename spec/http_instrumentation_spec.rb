@@ -13,10 +13,10 @@ describe HTTPInstrumentation do
 
     it "converts to method to a symbol" do
       data = HTTPInstrumentation.instrument(:test) do |payload|
-        payload[:method] = "GET"
+        payload[:http_method] = "GET"
         payload
       end
-      expect(data[:method]).to eq(:get)
+      expect(data[:http_method]).to eq(:get)
     end
 
     it "converts the url to a string" do
@@ -51,12 +51,39 @@ describe HTTPInstrumentation do
       expect(data[:url]).to eq("http://example.com")
     end
 
-    it "converts the status to an integer" do
+    it "adds a sanitized :uri to the payload" do
       data = HTTPInstrumentation.instrument(:test) do |payload|
-        payload[:status] = "200"
+        payload[:url] = URI("http://example.com?t=1&access_token=secret")
         payload
       end
-      expect(data[:status]).to eq(200)
+      expect(data[:uri]).to eq(URI("http://example.com?t=1"))
+    end
+
+    it "handles bad URLs in the payload" do
+      data = HTTPInstrumentation.instrument(:test) do |payload|
+        payload[:url] = 1.chr
+        payload
+      end
+      expect(data[:url]).to eq(1.chr)
+      expect(data).to_not include(:uri)
+    end
+
+    it "downcases the protocol and host in the uri" do
+      data = HTTPInstrumentation.instrument(:test) do |payload|
+        payload[:url] = URI("HTTP://EXAMPLE.COM/test")
+        payload
+      end
+      expect(data[:uri]).to eq(URI("HTTP://EXAMPLE.COM/test"))
+      expect(data[:uri].scheme).to eq("http")
+      expect(data[:uri].host).to eq("example.com")
+    end
+
+    it "converts the status to an integer" do
+      data = HTTPInstrumentation.instrument(:test) do |payload|
+        payload[:status_code] = "200"
+        payload
+      end
+      expect(data[:status_code]).to eq(200)
     end
   end
 
@@ -68,7 +95,7 @@ describe HTTPInstrumentation do
         end
         expect(retval).to eq(:one)
       end
-      expect(payloads).to eq([{client: "test"}])
+      expect(payloads).to eq([{client: "test", count: 1}])
 
       payloads = capture_notifications do
         expect(HTTPInstrumentation.silenced?).to be false
@@ -91,7 +118,7 @@ describe HTTPInstrumentation do
         end
         expect(retval).to eq(:three)
       end
-      expect(payloads).to eq([{client: "test"}])
+      expect(payloads).to eq([{client: "test", count: 1}])
     end
   end
 end

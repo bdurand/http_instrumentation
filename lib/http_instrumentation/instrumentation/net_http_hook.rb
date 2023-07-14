@@ -9,13 +9,18 @@ module HTTPInstrumentation
         end
       end
 
-      def request(request, *args)
+      def request(req, *args)
+        return super unless started?
+
         HTTPInstrumentation.instrument("net/http") do |payload|
           response = super
 
-          payload[:method] = request.method
-          payload[:url] = request.uri
-          payload[:status] = response.code
+          default_port = (use_ssl? ? 443 : 80)
+          scheme = (use_ssl? ? "https" : "http")
+          url = "#{scheme}://#{address}#{":#{port}" unless port == default_port}#{req.path}"
+          payload[:http_method] = req.method
+          payload[:url] = url
+          payload[:status_code] = response.code
 
           response
         end
