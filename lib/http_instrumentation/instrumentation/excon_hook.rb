@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+begin
+  require "excon"
+rescue LoadError
+end
+
 module HTTPInstrumentation
   module Instrumentation
     # This module is used to instrument the excon gem.
@@ -7,6 +12,10 @@ module HTTPInstrumentation
       class << self
         def instrument!
           Instrumentation.instrument!(::Excon::Connection, self) if defined?(::Excon::Connection)
+        end
+
+        def installed?
+          !!(defined?(::Excon::Connection) && ::Excon::Connection.include?(self))
         end
       end
 

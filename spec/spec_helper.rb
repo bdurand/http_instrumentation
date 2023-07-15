@@ -16,8 +16,6 @@ Bundler.require(:default, :test)
 
 require "active_support"
 
-HTTPInstrumentation.initialize! unless defined?(Rails)
-
 RSpec.configure do |config|
   config.order = :random
 

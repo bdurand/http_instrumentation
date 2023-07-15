@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+begin
+  require "typhoeus"
+rescue LoadError
+end
+
 module HTTPInstrumentation
   module Instrumentation
     # This module is responsible for instrumenting the typhoeus gem.
@@ -8,6 +13,13 @@ module HTTPInstrumentation
         def instrument!
           Instrumentation.instrument!(::Typhoeus::Request, Easy) if defined?(::Typhoeus::Request)
           Instrumentation.instrument!(::Typhoeus::Hydra, Multi) if defined?(::Typhoeus::Hydra)
+        end
+
+        def installed?
+          !!(
+            defined?(::Typhoeus::Request) && ::Typhoeus::Request.include?(Easy) &&
+            defined?(::Typhoeus::Hydra) && ::Typhoeus::Hydra.include?(Multi)
+          )
         end
       end
 

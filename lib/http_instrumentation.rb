@@ -143,4 +143,4 @@ module HTTPInstrumentation
   end
 end
 
-require_relative "http_instrumentation/railtie" if defined?(Rails::Railtie)
+HTTPInstrumentation.initialize!

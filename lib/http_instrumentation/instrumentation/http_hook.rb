@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+begin
+  require "http"
+rescue LoadError
+end
+
 module HTTPInstrumentation
   module Instrumentation
     # This module is responsible for instrumenting the http gem.
@@ -7,6 +12,10 @@ module HTTPInstrumentation
       class << self
         def instrument!
           Instrumentation.instrument!(::HTTP::Client, self) if defined?(::HTTP::Client)
+        end
+
+        def installed?
+          !!(defined?(::HTTP::Client) && ::HTTP::Client.include?(self))
         end
       end
 

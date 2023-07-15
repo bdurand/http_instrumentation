@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+begin
+  require "ethon"
+rescue LoadError
+end
+
 module HTTPInstrumentation
   module Instrumentation
     # This module is responsible for instrumenting the ethon gem.
@@ -8,6 +13,13 @@ module HTTPInstrumentation
         def instrument!
           Instrumentation.instrument!(::Ethon::Easy, Easy) if defined?(::Ethon::Easy)
           Instrumentation.instrument!(::Ethon::Multi, Multi) if defined?(::Ethon::Multi)
+        end
+
+        def installed?
+          !!(
+            defined?(::Ethon::Easy) && ::Ethon::Easy.include?(Easy) &&
+            defined?(::Ethon::Multi) && ::Ethon::Multi.include?(Multi)
+          )
         end
       end
 

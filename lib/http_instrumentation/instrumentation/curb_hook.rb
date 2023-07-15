@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+begin
+  require "curb"
+rescue LoadError
+end
+
 module HTTPInstrumentation
   module Instrumentation
     # This module is responsible for instrumenting the curb gem.
@@ -7,6 +12,10 @@ module HTTPInstrumentation
       class << self
         def instrument!
           Instrumentation.instrument!(::Curl::Easy, self) if defined?(::Curl::Easy)
+        end
+
+        def installed?
+          !!(defined?(::Curl::Easy) && ::Curl::Easy.include?(self))
         end
       end
 

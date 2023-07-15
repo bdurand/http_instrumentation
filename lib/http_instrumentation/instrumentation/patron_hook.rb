@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+begin
+  require "patron"
+rescue LoadError
+end
+
 module HTTPInstrumentation
   module Instrumentation
     # This module is responsible for instrumenting the patron gem.
@@ -7,6 +12,10 @@ module HTTPInstrumentation
       class << self
         def instrument!
           Instrumentation.instrument!(::Patron::Session, self) if defined?(::Patron::Session)
+        end
+
+        def installed?
+          !!(defined?(::Patron::Session) && ::Patron::Session.include?(self))
         end
       end
 

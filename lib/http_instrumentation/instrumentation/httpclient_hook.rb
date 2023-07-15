@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+begin
+  require "httpclient"
+rescue LoadError
+end
+
 module HTTPInstrumentation
   module Instrumentation
     module HTTPClientHook
@@ -7,6 +12,10 @@ module HTTPInstrumentation
       class << self
         def instrument!
           Instrumentation.instrument!(::HTTPClient, self) if defined?(::HTTPClient)
+        end
+
+        def installed?
+          !!(defined?(::HTTPClient) && ::HTTPClient.include?(self))
         end
       end
 

@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+begin
+  require "httpx"
+rescue LoadError
+end
+
 module HTTPInstrumentation
   module Instrumentation
     # This module is responsible for instrumenting the httpx gem.
@@ -7,6 +12,10 @@ module HTTPInstrumentation
       class << self
         def instrument!
           Instrumentation.instrument!(::HTTPX::Session, self) if defined?(::HTTPX::Session)
+        end
+
+        def installed?
+          !!(defined?(::HTTPX::Session) && ::HTTPX::Session.include?(self))
         end
       end
 

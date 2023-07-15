@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+begin
+  require "net/http"
+rescue LoadError
+end
+
 module HTTPInstrumentation
   module Instrumentation
     # This module is responsible for instrumenting the net/http module in the standard library.
@@ -7,6 +12,10 @@ module HTTPInstrumentation
       class << self
         def instrument!
           Instrumentation.instrument!(::Net::HTTP, self) if defined?(::Net::HTTP)
+        end
+
+        def installed?
+          !!(defined?(::Net::HTTP) && ::Net::HTTP.include?(self))
         end
       end
 
