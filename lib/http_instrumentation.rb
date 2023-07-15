@@ -56,6 +56,24 @@ module HTTPInstrumentation
       end
     end
 
+    # If a block is given, then set the HTTP client name for the duration of the
+    # block. If no block is given, then return the current HTTP client name.
+    #
+    # @param name [String, Symbol, nil] The name of the client to set
+    # @return [String, Symbol, nil] The current name of the client
+    def client(name = nil)
+      save_val = Thread.current[:http_instrumentation_client]
+      if block_given?
+        begin
+          Thread.current[:http_instrumentation_client] = name
+          yield
+        ensure
+          Thread.current[:http_instrumentation_client] = save_val
+        end
+      end
+      save_val
+    end
+
     # Returns true if instrumentation is currently silenced.
     #
     # @return [Boolean]
@@ -76,7 +94,7 @@ module HTTPInstrumentation
     # @param client [String, Symbol] The name of the client.
     # @return [Object] the return value of the block
     def instrument(client, &block)
-      payload = {client: client.to_s}
+      payload = {client: (self.client || client).to_s}
 
       return yield(payload) if silenced?
 

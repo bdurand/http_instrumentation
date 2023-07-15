@@ -73,6 +73,8 @@ HTTP.get("https://example.com/path?access_token=secrettoken")
 # event.payload[:url] will be https://example.com/path in both cases
 ```
 
+The hostname will also be converted to lowercase in these attributes.
+
 ### Silencing Notifications
 
 If you want to suppress notifications, you can do so by surrounding code with an `HTTPInstrumentation.silence` block.
@@ -98,6 +100,21 @@ class MyHttpClient
       payload[:status_code] = response.code
 
       response
+    end
+  end
+end
+
+MyHttpClient.get("https://example.com/")
+# Event => {client: "my_client", http_method => :get, url: "https://example.com/"}
+```
+
+You can also take advantage of the existing instrumentation and just override the client name in the notification event.
+
+```ruby
+class MyHttpClient
+  def get(url)
+    HTTPInstrumentation.client("my_client")
+      Net::HTTP.get(URI(url))
     end
   end
 end

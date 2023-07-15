@@ -11,6 +11,15 @@ describe HTTPInstrumentation do
       expect(data[:client]).to eq("test")
     end
 
+    it "can override the client name" do
+      HTTPInstrumentation.client(:foo) do
+        data = HTTPInstrumentation.instrument(:test) do |payload|
+          payload
+        end
+        expect(data[:client]).to eq("foo")
+      end
+    end
+
     it "converts to method to a symbol" do
       data = HTTPInstrumentation.instrument(:test) do |payload|
         payload[:http_method] = "GET"
