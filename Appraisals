@@ -27,7 +27,7 @@ appraise "ethon-0.8" do
 end
 
 appraise "excon-0.19" do
-  gem "excon", "~> 0.5.0"
+  gem "excon", "~> 0.19.0"
   remove_gem "curb"
   remove_gem "ethon"
   remove_gem "http"

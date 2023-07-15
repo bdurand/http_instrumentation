@@ -12,12 +12,7 @@ begin
 rescue LoadError
 end
 
-begin
-  Bundler.require(:default, :test)
-rescue => e
-  puts e.message, e.backtrace.join("\n")
-  raise e
-end
+Bundler.require(:default, :test)
 
 require "active_support"
 
