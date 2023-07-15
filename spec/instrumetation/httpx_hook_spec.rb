@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-if defined?(HTTPX)
+if HTTPInstrumentation::Instrumentation::HTTPXHook.installed?
   describe HTTPInstrumentation::Instrumentation::HTTPXHook do
     let(:url) { TEST_URL }
 

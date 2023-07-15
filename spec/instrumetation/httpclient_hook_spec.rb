@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-if defined?(HTTPClient)
+if HTTPInstrumentation::Instrumentation::HTTPClientHook.installed?
   describe HTTPInstrumentation::Instrumentation::HTTPClientHook do
     let(:url) { TEST_URL }
 

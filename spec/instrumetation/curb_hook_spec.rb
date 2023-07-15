@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-if defined?(Curl)
+if HTTPInstrumentation::Instrumentation::CurbHook.installed?
   describe HTTPInstrumentation::Instrumentation::CurbHook do
     let(:url) { TEST_URL }
 

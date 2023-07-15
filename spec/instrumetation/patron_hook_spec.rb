@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-if defined?(Patron)
+if HTTPInstrumentation::Instrumentation::PatronHook.installed?
   describe HTTPInstrumentation::Instrumentation::PatronHook do
     let(:url) { TEST_URL }
 

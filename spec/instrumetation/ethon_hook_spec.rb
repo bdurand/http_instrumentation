@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-if defined?(Ethon)
+if HTTPInstrumentation::Instrumentation::EthonHook.installed?
   describe HTTPInstrumentation::Instrumentation::EthonHook do
     let(:url) { TEST_URL }
 

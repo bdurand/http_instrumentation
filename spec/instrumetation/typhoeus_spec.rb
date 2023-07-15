@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-if defined?(Typhoeus)
+if HTTPInstrumentation::Instrumentation::TyphoeusHook.installed?
   describe HTTPInstrumentation::Instrumentation::TyphoeusHook do
     let(:url) { TEST_URL }
 

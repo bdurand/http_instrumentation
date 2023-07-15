@@ -26,7 +26,7 @@ appraise "ethon-0.8" do
   remove_gem "rest-client"
 end
 
-appraise "excon-0.5" do
+appraise "excon-0.19" do
   gem "excon", "~> 0.5.0"
   remove_gem "curb"
   remove_gem "ethon"
@@ -124,8 +124,8 @@ appraise "httpclient-2.7" do
   remove_gem "rest-client"
 end
 
-appraise "httpx-0.1" do
-  gem "httpx", "~> 0.1.0"
+appraise "httpx-0.2" do
+  gem "httpx", "~> 0.2.0"
   remove_gem "curb"
   remove_gem "ethon"
   remove_gem "excon"

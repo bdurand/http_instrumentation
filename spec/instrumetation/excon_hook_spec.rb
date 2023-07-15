@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-if defined?(Excon)
+if HTTPInstrumentation::Instrumentation::ExconHook.installed?
   describe HTTPInstrumentation::Instrumentation::ExconHook do
     let(:url) { TEST_URL }
 
