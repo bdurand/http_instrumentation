@@ -46,6 +46,8 @@ jobs:
             appraisal: "httpclient_2.7"
           - ruby: "2.5"
             appraisal: "httpx_0.2"
+          - ruby: "ruby"
+            appraisal: "net_http_latest"
           - ruby: "2.5"
             appraisal: "patron_0.5"
           - ruby: "2.5"

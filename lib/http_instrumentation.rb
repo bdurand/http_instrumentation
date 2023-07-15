@@ -13,6 +13,7 @@ module HTTPInstrumentation
     :httpclient,
     :httpx,
     :net_http,
+    :net_http2,
     :patron,
     :typhoeus
   ].freeze
