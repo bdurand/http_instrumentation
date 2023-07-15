@@ -19,13 +19,16 @@ module HTTPInstrumentation
         end
       end
 
-      def do_get_block(request, *args)
+      def do_get_block(request, *)
         HTTPInstrumentation.instrument("httpclient") do |payload|
           response = super
 
-          payload[:http_method] = request.header.request_method
-          payload[:url] = request.header.request_uri
-          payload[:status_code] = response.header.status_code
+          begin
+            payload[:http_method] = request.header.request_method
+            payload[:url] = request.header.request_uri
+            payload[:status_code] = response.header.status_code
+          rescue
+          end
 
           response
         end

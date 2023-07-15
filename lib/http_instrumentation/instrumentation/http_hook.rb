@@ -19,13 +19,16 @@ module HTTPInstrumentation
         end
       end
 
-      def perform(request, *args)
+      def perform(request, *)
         HTTPInstrumentation.instrument("http") do |payload|
           response = super
 
-          payload[:http_method] = request.verb
-          payload[:url] = request.uri
-          payload[:status_code] = response.status
+          begin
+            payload[:http_method] = request.verb
+            payload[:url] = request.uri
+            payload[:status_code] = response.status
+          rescue
+          end
 
           response
         end

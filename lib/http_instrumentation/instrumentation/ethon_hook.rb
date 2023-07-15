@@ -26,7 +26,10 @@ module HTTPInstrumentation
       module Multi
         def perform(*)
           HTTPInstrumentation.instrument("ethon") do |payload|
-            payload[:count] = easy_handles.size
+            begin
+              payload[:count] = easy_handles.size
+            rescue
+            end
 
             super
           end
@@ -34,7 +37,7 @@ module HTTPInstrumentation
       end
 
       module Easy
-        def http_request(url, action_name, *args)
+        def http_request(url, action_name, *)
           @http_method = action_name
           @http_url = url
           super
@@ -46,7 +49,10 @@ module HTTPInstrumentation
 
             payload[:http_method] = @http_method
             payload[:url] = @http_url
-            payload[:status_code] = response_code
+            begin
+              payload[:status_code] = response_code
+            rescue
+            end
 
             retval
           end

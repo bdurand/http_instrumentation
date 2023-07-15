@@ -26,7 +26,10 @@ module HTTPInstrumentation
       module Multi
         def run(*)
           HTTPInstrumentation.instrument("typhoeus") do |payload|
-            payload[:count] = queued_requests.size
+            begin
+              payload[:count] = queued_requests.size
+            rescue
+            end
 
             super
           end
@@ -38,9 +41,12 @@ module HTTPInstrumentation
           HTTPInstrumentation.instrument("typhoeus") do |payload|
             retval = super
 
-            payload[:http_method] = options[:method]
-            payload[:url] = url
-            payload[:status_code] = response&.response_code
+            begin
+              payload[:http_method] = options[:method]
+              payload[:url] = url
+              payload[:status_code] = response&.response_code
+            rescue
+            end
 
             retval
           end

@@ -19,13 +19,16 @@ module HTTPInstrumentation
         end
       end
 
-      def http(method, *args)
+      def http(method, *)
         HTTPInstrumentation.instrument("curb") do |payload|
           retval = super
 
           payload[:http_method] = method
-          payload[:url] = url
-          payload[:status_code] = response_code
+          begin
+            payload[:url] = url
+            payload[:status_code] = response_code
+          rescue
+          end
 
           retval
         end

@@ -19,7 +19,7 @@ module HTTPInstrumentation
         end
       end
 
-      def request(req, *args)
+      def request(req, *)
         return super unless started?
 
         HTTPInstrumentation.instrument("net/http") do |payload|

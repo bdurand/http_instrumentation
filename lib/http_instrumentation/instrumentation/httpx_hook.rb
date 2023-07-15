@@ -26,9 +26,12 @@ module HTTPInstrumentation
           responses = super
 
           if requests.size == 1
-            payload[:http_method] = requests.first.verb
-            payload[:url] = requests.first.uri
-            payload[:status_code] = responses.first.status
+            begin
+              payload[:http_method] = requests.first.verb
+              payload[:url] = requests.first.uri
+              payload[:status_code] = responses.first.status
+            rescue
+            end
           else
             payload[:count] = requests.size
           end

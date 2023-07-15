@@ -19,23 +19,26 @@ module HTTPInstrumentation
         end
       end
 
-      def request(params = {}, *args)
+      def request(params = {}, *)
         HTTPInstrumentation.instrument("excon") do |payload|
           response = super
 
-          info = params
-          if respond_to?(:connection)
-            info = info.merge(connection)
-          elsif respond_to?(:data)
-            info = info.merge(data)
-          end
+          begin
+            info = params
+            if respond_to?(:connection)
+              info = info.merge(connection)
+            elsif respond_to?(:data)
+              info = info.merge(data)
+            end
 
-          scheme = info[:scheme]&.downcase
-          default_port = ((scheme == "https") ? 443 : 80)
-          port = info[:port]
-          payload[:http_method] = (info[:http_method] || info[:method])
-          payload[:url] = "#{scheme}://#{info[:host]}#{":#{port}" unless port == default_port}#{info[:path]}#{"?#{info[:query]}" unless info[:query].to_s.empty?}"
-          payload[:status_code] = response.status
+            scheme = info[:scheme]&.downcase
+            default_port = ((scheme == "https") ? 443 : 80)
+            port = info[:port]
+            payload[:http_method] = (info[:http_method] || info[:method])
+            payload[:url] = "#{scheme}://#{info[:host]}#{":#{port}" unless port == default_port}#{info[:path]}#{"?#{info[:query]}" unless info[:query].to_s.empty?}"
+            payload[:status_code] = response.status
+          rescue
+          end
 
           response
         end

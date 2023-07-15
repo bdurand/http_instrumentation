@@ -21,13 +21,16 @@ module HTTPInstrumentation
 
       private
 
-      def request(action, url, *args)
+      def request(action, url, *)
         HTTPInstrumentation.instrument("patron") do |payload|
           response = super
 
           payload[:http_method] = action
           payload[:url] = url
-          payload[:status_code] = response.status
+          begin
+            payload[:status_code] = response.status
+          rescue
+          end
 
           response
         end
