@@ -21,7 +21,7 @@ Note that several other popular HTTP client libraries like [Faraday](https://git
 
 ## Usage
 
-To capture information about HTTP requests, simply subscribe to the `request.http` events with ActiveSupport notifications (note that you should really use `monotonic_subscribe` instead of `subscribe` to avoid issues with clock adjustments).
+To capture information about HTTP requests, simply subscribe to the `request.http` events with [ActiveSupport notifications](https://api.rubyonrails.org/classes/ActiveSupport/Notifications.html) (note that you should really use `monotonic_subscribe` instead of `subscribe` to avoid issues with clock adjustments).
 
 The payload on event notifications for all HTTP requests will include:
 
