@@ -15,7 +15,7 @@ if HTTPInstrumentation::Instrumentation::ExconHook.installed?
     it "instruments GET requests with query strings" do
       response, notifications = test_http_request { Excon.get("#{url}?t=1") }
       expect(response.body).to eq("GET OK")
-      expect(notifications).to eq [{http_method: :get, url: "#{url}?t=1", uri: URI("#{url}?t=1"), status_code: 200, count: 1, client: "excon"}]
+      expect(notifications).to eq [{http_method: :get, url: url, uri: URI("#{url}?t=1"), status_code: 200, count: 1, client: "excon"}]
     end
 
     it "instruments POST requests" do

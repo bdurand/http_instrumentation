@@ -44,12 +44,12 @@ describe HTTPInstrumentation do
       expect(data[:url]).to eq("http://example.com")
     end
 
-    it "strips access tokens from the URL" do
+    it "strips access tokens from the URL and separates the query string" do
       data = HTTPInstrumentation.instrument(:test) do |payload|
         payload[:url] = URI("http://example.com?foo=bar&access_token=secret&baz=qux")
         payload
       end
-      expect(data[:url]).to eq("http://example.com?foo=bar&baz=qux")
+      expect(data[:url]).to eq("http://example.com")
     end
 
     it "strips the entire query string if the access token was the only parameter" do

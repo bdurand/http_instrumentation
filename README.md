@@ -30,8 +30,8 @@ The payload on event notifications for all HTTP requests will include:
 
 If a single HTTP request was made, then these keys will exist as well:
 
-* `:url` - The URL for the request
 * `:uri` - The URI for the request
+* `:url` - The URL for the request with any query string stripped off
 * `:http_method` - The HTTP method for the request
 * `:status_code` - The numeric HTTP status code for the response
 
@@ -65,7 +65,7 @@ HTTPX.get("https://example.com/r1", "https://example.com/r2")
 
 ### Security
 
-The `:url` and `:uri` elements in the event payload will be sanitized to remove any user/password elements encoded in the URL as well as any `access_token` query parameters.
+The `:uri` element in the event payload will be sanitized to remove any user/password elements encoded in the URL as well as any `access_token` query parameters. The `:url` element will also have any query string stripped from it so it will just include the scheme, host, and path.
 
 ```ruby
 HTTP.get("https://user@password123@example.com/path")

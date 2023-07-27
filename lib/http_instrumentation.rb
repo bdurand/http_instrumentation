@@ -106,7 +106,7 @@ module HTTPInstrumentation
         if payload.include?(:url)
           uri = sanitized_uri(payload[:url])
           if uri
-            payload[:url] = uri.to_s
+            payload[:url] = uri_without_query_string(uri)
             payload[:uri] = uri
           else
             payload[:url] = payload[:url]&.to_s
@@ -158,6 +158,10 @@ module HTTPInstrumentation
       end
 
       uri
+    end
+
+    def uri_without_query_string(uri)
+      URI("#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}").to_s
     end
   end
 end
