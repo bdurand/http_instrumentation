@@ -65,7 +65,9 @@ HTTPX.get("https://example.com/r1", "https://example.com/r2")
 
 ### Security
 
-The `:uri` element in the event payload will be sanitized to remove any user/password elements encoded in the URL as well as any `access_token` query parameters. The `:url` element will also have any query string stripped from it so it will just include the scheme, host, and path.
+The `:uri` element in the event payload will be sanitized to remove any user/password elements encoded in the URL as well as any `access_token` query parameters.
+
+The `:url` element will also have the query string stripped from it so it will just include the scheme, host, and path.
 
 ```ruby
 HTTP.get("https://user@password123@example.com/path")
