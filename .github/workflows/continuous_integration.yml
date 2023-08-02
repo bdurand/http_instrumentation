@@ -25,6 +25,7 @@ jobs:
       matrix:
         include:
           - ruby: "ruby"
+            label: "latest"
             standardrb: true
           - ruby: "ruby"
             label: "force prepend"
