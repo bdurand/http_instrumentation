@@ -11,17 +11,23 @@ module HTTPInstrumentation
     module HTTPHook
       class << self
         def instrument!
-          Instrumentation.instrument!(::HTTP::Client, self) if defined?(::HTTP::Client)
+          Instrumentation.instrument!(::HTTP::Client, self, :perform) if defined?(::HTTP::Client)
         end
 
         def installed?
           !!(defined?(::HTTP::Client) && ::HTTP::Client.include?(self))
         end
+
+        attr_accessor :aliased
       end
 
-      def perform(request, *)
+      def perform(request, *args)
         HTTPInstrumentation.instrument("http") do |payload|
-          response = super
+          response = if HTTPInstrumentation::Instrumentation::HTTPHook.aliased
+            perform_without_http_instrumentation(request, *args)
+          else
+            super
+          end
 
           begin
             payload[:http_method] = request.verb

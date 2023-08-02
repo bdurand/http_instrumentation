@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../spec_helper"
+require_relative "../../spec_helper"
 
 if HTTPInstrumentation::Instrumentation::TyphoeusHook.installed?
   describe HTTPInstrumentation::Instrumentation::TyphoeusHook do

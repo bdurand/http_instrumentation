@@ -11,17 +11,23 @@ module HTTPInstrumentation
     module ExconHook
       class << self
         def instrument!
-          Instrumentation.instrument!(::Excon::Connection, self) if defined?(::Excon::Connection)
+          Instrumentation.instrument!(::Excon::Connection, self, :request) if defined?(::Excon::Connection)
         end
 
         def installed?
           !!(defined?(::Excon::Connection) && ::Excon::Connection.include?(self))
         end
+
+        attr_accessor :aliased
       end
 
-      def request(params = {}, *)
+      def request(params = {})
         HTTPInstrumentation.instrument("excon") do |payload|
-          response = super
+          response = if HTTPInstrumentation::Instrumentation::ExconHook.aliased
+            request_without_http_instrumentation(params)
+          else
+            super
+          end
 
           begin
             info = params

@@ -121,6 +121,14 @@ module HTTPInstrumentation
       end
     end
 
+    # Returns true if instrumentation should always use module prepend rather than method aliasing.
+    # The default is to use method aliasing since that is more compatible with other libraries.
+    # Prepending can be forced by setting the HTTP_INSTRUMENTATION_FORCE_PREPEND environment variable
+    # to "true".
+    def force_prepend?
+      ENV.fetch("HTTP_INSTRUMENTATION_FORCE_PREPEND", nil) == "true"
+    end
+
     private
 
     # Turn the given value into a lowercase symbol.
