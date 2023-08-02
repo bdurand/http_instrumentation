@@ -27,7 +27,7 @@ module HTTPInstrumentation
 
         methods = Array(methods).collect(&:to_sym)
 
-        if methods_prepended?(klass, methods)
+        if HTTPInstrumentation.force_prepend? || methods_prepended?(klass, methods)
           klass.prepend(instrumentation_module)
           instrumentation_module.aliased = false
         else

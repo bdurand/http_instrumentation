@@ -6,8 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 1.0.1
 
-### Added
-- Added option for how to inject instrumentation behavior. If other gems are using `alias_method` to inject behavior, then you cannot use `prepend` to do the same.
+### Fixed
+- Added detection for other gems that may be instrumenting these same libraries and ensuring that the method of injecting the instrumentation call is compatible. This fixes issues caused by the fundamental incompatibility in Ruby between `alias_method` and `prepend` on the same method. Aliasing is now the default method for injection since this is the most compatible. However if another library has already prepended behavior on a method, then `prepend` will be used instead.
 
 ## 1.0.0
 

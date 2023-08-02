@@ -26,6 +26,10 @@ jobs:
         include:
           - ruby: "ruby"
             standardrb: true
+          - ruby: "ruby"
+            label: "force prepend"
+            env:
+              HTTP_INSTRUMENTATION_FORCE_PREPEND: "true"
           - ruby: "2.5"
             appraisal: "curb_0.9"
           - ruby: "2.5"
