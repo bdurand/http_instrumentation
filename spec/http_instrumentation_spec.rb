@@ -12,11 +12,19 @@ describe HTTPInstrumentation do
     end
 
     it "can override the client name" do
-      HTTPInstrumentation.client(:foo) do
+      retval = HTTPInstrumentation.client(:foo) do
         data = HTTPInstrumentation.instrument(:test) do |payload|
           payload
         end
         expect(data[:client]).to eq("foo")
+        :value
+      end
+      expect(retval).to eq :value
+    end
+
+    it "can get the current client name" do
+      HTTPInstrumentation.client(:foo) do
+        expect(HTTPInstrumentation.client).to eq("foo")
       end
     end
 

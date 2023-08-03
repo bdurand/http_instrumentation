@@ -16,6 +16,8 @@ Bundler.require(:default, :test)
 
 require "active_support"
 
+require_relative "other_gems_setup"
+
 RSpec.configure do |config|
   config.order = :random
 

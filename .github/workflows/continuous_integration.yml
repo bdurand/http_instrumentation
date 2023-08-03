@@ -59,6 +59,12 @@ jobs:
             appraisal: "typhoeus_0.7"
           - ruby: "2.7"
             appraisal: "typhoeus_1.3"
+          - ruby: "ruby"
+            appraisal: "with_webmock"
+          - ruby: "ruby"
+            appraisal: "with_apms"
+          - ruby: "ruby"
+            appraisal: "with_open_telemetry"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Ruby ${{ matrix.ruby }}

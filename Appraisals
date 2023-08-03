@@ -226,3 +226,20 @@ appraise "typhoeus-1.3" do
   remove_gem "httparty"
   remove_gem "rest-client"
 end
+
+appraise "with-apms" do
+  gem "ddtrace"
+  gem "newrelic_rpm"
+  gem "scout_apm"
+  gem "elastic-apm"
+end
+
+appraise "with-open-telemetry" do
+  gem "opentelemetry-instrumentation-all"
+  gem "opentelemetry-sdk"
+end
+
+appraise "with-webmock" do
+  gem "webmock"
+  gem "vcr"
+end
