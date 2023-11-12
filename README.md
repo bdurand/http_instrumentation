@@ -3,6 +3,7 @@
 [![Continuous Integration](https://github.com/bdurand/http_instrumentation/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/bdurand/http_instrumentation/actions/workflows/continuous_integration.yml)
 [![Regression Test](https://github.com/bdurand/http_instrumentation/actions/workflows/regression_test.yml/badge.svg)](https://github.com/bdurand/http_instrumentation/actions/workflows/regression_test.yml)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
+[![Gem Version](https://badge.fury.io/rb/http_instrumentation.svg)](https://badge.fury.io/rb/http_instrumentation)
 
 This gem adds instrumentation to a variety of the most commonly used Ruby HTTP client libraries via ActiveSupport notifications. The goal is to add a common instrumentation interface across all the HTTP client libraries used by an application (including ones installed as dependencies of other gems).
 
