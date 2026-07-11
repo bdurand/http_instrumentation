@@ -44,10 +44,13 @@ jobs:
             frozen_strings: false
           - ruby: "2.7"
             appraisal: "http_2.0"
+            frozen_strings: false
           - ruby: "2.7"
             appraisal: "http_3.0"
+            frozen_strings: false
           - ruby: "2.7"
             appraisal: "http_4.0"
+            frozen_strings: false
           - ruby: "3.1"
             appraisal: "http_5.0"
           - ruby: "4.0"
