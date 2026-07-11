@@ -13,6 +13,21 @@ appraise "curb-0.9" do
   remove_gem "rest-client"
 end
 
+appraise "curb-1.0" do
+  gem "curb", "~> 1.0.0"
+  remove_gem "ethon"
+  remove_gem "excon"
+  remove_gem "http"
+  remove_gem "httpclient"
+  remove_gem "httpx"
+  remove_gem "net-http2"
+  remove_gem "patron"
+  remove_gem "typhoeus"
+  remove_gem "faraday"
+  remove_gem "httparty"
+  remove_gem "rest-client"
+end
+
 appraise "ethon-0.8" do
   gem "ethon", "~> 0.8.0"
   remove_gem "curb"
@@ -30,6 +45,21 @@ end
 
 appraise "excon-0.19" do
   gem "excon", "~> 0.19.0"
+  remove_gem "curb"
+  remove_gem "ethon"
+  remove_gem "http"
+  remove_gem "httpclient"
+  remove_gem "httpx"
+  remove_gem "net-http2"
+  remove_gem "patron"
+  remove_gem "typhoeus"
+  remove_gem "faraday"
+  remove_gem "httparty"
+  remove_gem "rest-client"
+end
+
+appraise "excon-1.0" do
+  gem "excon", "~> 1.0.0"
   remove_gem "curb"
   remove_gem "ethon"
   remove_gem "http"
@@ -118,6 +148,21 @@ appraise "http-5.0" do
   remove_gem "rest-client"
 end
 
+appraise "http-6.0" do
+  gem "http", "~> 6.0.0"
+  remove_gem "curb"
+  remove_gem "ethon"
+  remove_gem "excon"
+  remove_gem "httpclient"
+  remove_gem "httpx"
+  remove_gem "net-http2"
+  remove_gem "patron"
+  remove_gem "typhoeus"
+  remove_gem "faraday"
+  remove_gem "httparty"
+  remove_gem "rest-client"
+end
+
 appraise "httpclient-2.7" do
   gem "httpclient", "~> 2.7.0"
   remove_gem "curb"
@@ -135,6 +180,21 @@ end
 
 appraise "httpx-0.2" do
   gem "httpx", "~> 0.2.0"
+  remove_gem "curb"
+  remove_gem "ethon"
+  remove_gem "excon"
+  remove_gem "http"
+  remove_gem "httpclient"
+  remove_gem "net-http2"
+  remove_gem "patron"
+  remove_gem "typhoeus"
+  remove_gem "faraday"
+  remove_gem "httparty"
+  remove_gem "rest-client"
+end
+
+appraise "httpx-1.0" do
+  gem "httpx", "~> 1.0.0"
   remove_gem "curb"
   remove_gem "ethon"
   remove_gem "excon"
