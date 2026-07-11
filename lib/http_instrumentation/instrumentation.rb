@@ -34,7 +34,7 @@ module HTTPInstrumentation
 
           methods = Array(methods).collect(&:to_sym)
 
-          if HTTPInstrumentation.force_prepend? || methods_prepended?(klass, methods)
+          if HTTPInstrumentation.force_prepend? || methods_defined_in_module?(klass, methods)
             klass.prepend(instrumentation_module)
             instrumentation_module.aliased = false
           else
@@ -65,18 +65,18 @@ module HTTPInstrumentation
       # module would insert it ahead of the module that defines the method, so
       # aliasing the method afterward would capture the instrumented method itself
       # and cause infinite recursion.
-      def methods_prepended?(klass, methods)
-        prepended = false
+      def methods_defined_in_module?(klass, methods)
+        defined_in_module = false
 
         klass.ancestors.each do |mod|
           next unless mod.is_a?(Module) && !mod.is_a?(Class)
 
           module_methods = mod.instance_methods(false) + mod.private_instance_methods(false)
-          prepended = (module_methods & methods).any?
-          break if prepended
+          defined_in_module = (module_methods & methods).any?
+          break if defined_in_module
         end
 
-        prepended
+        defined_in_module
       end
 
       def defines_method?(klass, method)
