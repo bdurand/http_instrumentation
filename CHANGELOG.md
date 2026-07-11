@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The ethon instrumentation clears the request info captured from `http_request` after each `perform`, so reusing an easy handle without going through `http_request` no longer reports the previous request's method and URL. The URL set directly on the handle is now also reported as a fallback.
 - The `:url` payload value no longer includes an explicit port for URLs using the default port for their scheme.
 
+### Changed
+- The minimum required Ruby version has been updated to 2.6.
+
 ## 1.0.1
 
 ### Fixed
