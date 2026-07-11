@@ -10,12 +10,7 @@ on:
   pull_request:
     branches-ignore:
       - actions-*
-
-env:
-  BUNDLE_CLEAN: "true"
-  BUNDLE_PATH: vendor/bundle
-  BUNDLE_JOBS: 3
-  BUNDLE_RETRY: 3
+  workflow_dispatch:
 
 jobs:
   build:
@@ -27,35 +22,44 @@ jobs:
           - ruby: "ruby"
             label: "latest"
             standardrb: true
+            yard: true
           - ruby: "ruby"
             label: "force prepend"
             env:
               HTTP_INSTRUMENTATION_FORCE_PREPEND: "true"
-          - ruby: "2.5"
-            appraisal: "curb_0.9"
-          - ruby: "2.5"
-            appraisal: "ethon_0.8"
-          - ruby: "2.5"
-            appraisal: "excon_0.19"
-          - ruby: "2.5"
-            appraisal: "http_1.0"
           - ruby: "2.6"
+            appraisal: "curb_0.9"
+          - ruby: "3.2"
+            appraisal: "curb_1.0"
+          - ruby: "2.6"
+            appraisal: "ethon_0.8"
+          - ruby: "2.6"
+            appraisal: "excon_0.19"
+          - ruby: "3.2"
+            appraisal: "excon_1.0"
+          - ruby: "2.6"
+            appraisal: "http_1.0"
+          - ruby: "2.7"
             appraisal: "http_2.0"
-          - ruby: "2.5"
+          - ruby: "2.7"
             appraisal: "http_3.0"
-          - ruby: "2.5"
+          - ruby: "2.7"
             appraisal: "http_4.0"
           - ruby: "3.1"
             appraisal: "http_5.0"
-          - ruby: "2.5"
+          - ruby: "4.0"
+            appraisal: "http_6.0"
+          - ruby: "2.6"
             appraisal: "httpclient_2.7"
-          - ruby: "2.5"
+          - ruby: "2.7"
             appraisal: "httpx_0.2"
+          - ruby: "3.1"
+            appraisal: "httpx_1.0"
           - ruby: "ruby"
             appraisal: "net_http_latest"
-          - ruby: "2.5"
+          - ruby: "2.6"
             appraisal: "patron_0.5"
-          - ruby: "2.5"
+          - ruby: "2.6"
             appraisal: "typhoeus_0.7"
           - ruby: "2.7"
             appraisal: "typhoeus_1.3"
@@ -66,28 +70,15 @@ jobs:
           - ruby: "ruby"
             appraisal: "with_open_telemetry"
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Ruby ${{ matrix.ruby }}
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: "${{ matrix.ruby }}"
-    - name: Install dependencies
-      run: sudo apt-get install libcurl4-openssl-dev
-    - name: Setup bundler
-      if: matrix.bundler != ''
-      run: |
-        gem uninstall bundler --all
-        gem install bundler --no-document --version ${{ matrix.bundler }}
-    - name: Set Appraisal bundle
-      if: matrix.appraisal != ''
-      run: |
-        echo "using gemfile gemfiles/${{ matrix.appraisal }}.gemfile"
-        bundle config set gemfile "gemfiles/${{ matrix.appraisal }}.gemfile"
-    - name: Install gems
-      run: |
-        bundle update
-    - name: Run Tests
-      run: bundle exec rake
-    - name: standardrb
-      if:   matrix.standardrb == true
-      run:  bundle exec rake standard
+      - name: Install dependencies
+        run: sudo apt-get install libcurl4-openssl-dev
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Ruby CI
+        uses: bdurand/github-actions/ruby-ci@v1.0.1
+        with:
+          ruby: ${{ matrix.ruby }}
+          appraisal: ${{ matrix.appraisal }}
+          bundler: ${{ matrix.bundler }}
+          standardrb: ${{ matrix.standardrb }}
+          yard: ${{ matrix.yard }}
