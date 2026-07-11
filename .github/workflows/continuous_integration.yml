@@ -86,3 +86,4 @@ jobs:
           bundler: ${{ matrix.bundler }}
           standardrb: ${{ matrix.standardrb }}
           yard: ${{ matrix.yard }}
+          frozen_strings: ${{ matrix.frozen_strings }}
