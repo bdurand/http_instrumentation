@@ -79,7 +79,7 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
       - name: Ruby CI
-        uses: bdurand/github-actions/ruby-ci@main
+        uses: bdurand/github-actions/ruby-ci@v1.0.3
         with:
           ruby: ${{ matrix.ruby }}
           appraisal: ${{ matrix.appraisal }}
