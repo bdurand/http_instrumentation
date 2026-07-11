@@ -29,8 +29,8 @@ module HTTPInstrumentation
     # @param except [Array<Symbol>] List of libraries to not instrument.
     # @return [void]
     def initialize!(only: nil, except: nil)
-      list = (only || IMPLEMENTATIONS)
-      list &= Array(except) if except
+      list = only || IMPLEMENTATIONS
+      list -= Array(except) if except
 
       Instrumentation::CurbHook.instrument! if list.include?(:curb)
       Instrumentation::EthonHook.instrument! if list.include?(:ethon)
@@ -44,6 +44,9 @@ module HTTPInstrumentation
     end
 
     # Silence instrumentation for the duration of the block.
+    #
+    # Note that silencing is stored in fiber-local storage, so it does not
+    # propagate into other threads or fibers spawned within the block.
     #
     # @return [Object] the return value of the block
     def silence(&block)
@@ -101,25 +104,7 @@ module HTTPInstrumentation
       return yield(payload) if silenced?
 
       ActiveSupport::Notifications.instrument(EVENT, payload) do
-        retval = silence { yield(payload) }
-
-        payload[:http_method] = normalize_http_method(payload[:http_method]) if payload.include?(:http_method)
-
-        if payload.include?(:url)
-          uri = sanitized_uri(payload[:url])
-          if uri
-            payload[:url] = uri_without_query_string(uri)
-            payload[:uri] = uri
-          else
-            payload[:url] = payload[:url]&.to_s
-          end
-        end
-
-        payload[:status_code] = payload[:status_code]&.to_i if payload.include?(:status_code)
-
-        payload[:count] = (payload.include?(:count) ? payload[:count].to_i : 1)
-
-        retval
+        instrument_request(payload, &block)
       end
     end
 
@@ -132,6 +117,29 @@ module HTTPInstrumentation
     end
 
     private
+
+    # Yield the block with instrumentation silenced and then normalize the
+    # payload. The payload is normalized even if the block raises an error so
+    # that events for failed requests still include the normalized keys.
+    def instrument_request(payload)
+      silence { yield(payload) }
+    ensure
+      payload[:http_method] = normalize_http_method(payload[:http_method]) if payload.include?(:http_method)
+
+      if payload.include?(:url)
+        uri = sanitized_uri(payload[:url])
+        if uri
+          payload[:url] = uri_without_query_string(uri)
+          payload[:uri] = uri
+        else
+          payload[:url] = payload[:url]&.to_s
+        end
+      end
+
+      payload[:status_code] = payload[:status_code]&.to_i if payload.include?(:status_code)
+
+      payload[:count] = (payload.include?(:count) ? payload[:count].to_i : 1)
+    end
 
     # Turn the given value into a lowercase symbol.
     def normalize_http_method(method)
@@ -171,7 +179,10 @@ module HTTPInstrumentation
     end
 
     def uri_without_query_string(uri)
-      URI("#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}").to_s
+      stripped = uri.dup
+      stripped.query = nil if stripped.respond_to?(:query=)
+      stripped.fragment = nil if stripped.respond_to?(:fragment=)
+      stripped.to_s
     end
   end
 end

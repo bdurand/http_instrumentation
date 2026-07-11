@@ -127,5 +127,76 @@ unless HTTPInstrumentation.force_prepend?
         expect(instance.trace).to eq([:prepend, :instrumented, :test])
       end
     end
+
+    describe "instrumenting a class more than once" do
+      module TestInstrumentationTwice
+        class << self
+          attr_accessor :aliased
+        end
+
+        def request(*args)
+          @trace << :instrumented
+          if TestInstrumentationTwice.aliased
+            request_without_http_instrumentation(*args)
+          else
+            super
+          end
+        end
+      end
+
+      class TestClass5 < TestClassBase
+        def request(argument)
+          @trace << argument
+        end
+      end
+
+      it "does not install the instrumentation twice" do
+        HTTPInstrumentation::Instrumentation.instrument!(TestClass5, TestInstrumentationTwice, :request)
+        HTTPInstrumentation::Instrumentation.instrument!(TestClass5, TestInstrumentationTwice, :request)
+
+        instance = TestClass5.new
+        instance.request(:test)
+        expect(instance.trace).to eq([:instrumented, :test])
+      end
+    end
+
+    describe "instrumenting a class whose methods are defined in an included module" do
+      module TestInstrumentationIncluded
+        class << self
+          attr_accessor :aliased
+        end
+
+        def request(*args)
+          @trace << :instrumented
+          if TestInstrumentationIncluded.aliased
+            request_without_http_instrumentation(*args)
+          else
+            super
+          end
+        end
+      end
+
+      module TestIncludedMethods
+        def request(argument)
+          @trace << argument
+        end
+      end
+
+      class TestClass6 < TestClassBase
+        include TestIncludedMethods
+      end
+
+      # Aliasing would capture the instrumented method itself since including the
+      # instrumentation module inserts it ahead of the module defining the method,
+      # so the prepend strategy must be used.
+      it "uses the prepend strategy to avoid infinite recursion" do
+        HTTPInstrumentation::Instrumentation.instrument!(TestClass6, TestInstrumentationIncluded, :request)
+        expect(TestInstrumentationIncluded.aliased).to be false
+
+        instance = TestClass6.new
+        instance.request(:test)
+        expect(instance.trace).to eq([:instrumented, :test])
+      end
+    end
   end
 end

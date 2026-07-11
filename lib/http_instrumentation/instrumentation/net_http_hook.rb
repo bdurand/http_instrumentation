@@ -37,12 +37,15 @@ module HTTPInstrumentation
             super
           end
 
-          default_port = (use_ssl? ? 443 : 80)
-          scheme = (use_ssl? ? "https" : "http")
-          url = "#{scheme}://#{address}#{":#{port}" unless port == default_port}#{req.path}"
-          payload[:http_method] = req.method
-          payload[:url] = url
-          payload[:status_code] = response.code
+          begin
+            default_port = (use_ssl? ? 443 : 80)
+            scheme = (use_ssl? ? "https" : "http")
+            url = "#{scheme}://#{address}#{":#{port}" unless port == default_port}#{req.path}"
+            payload[:http_method] = req.method
+            payload[:url] = url
+            payload[:status_code] = response.code
+          rescue
+          end
 
           response
         end

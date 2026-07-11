@@ -23,5 +23,12 @@ if HTTPInstrumentation::Instrumentation::ExconHook.installed?
       expect(response.body).to eq("POST OK")
       expect(notifications).to eq [{http_method: :post, url: url, uri: URI(url), status_code: 200, count: 1, client: "excon"}]
     end
+
+    it "reports per request values rather than connection defaults" do
+      connection = Excon.new(url.sub("/test", "/other?x=1"))
+      response, notifications = test_http_request { connection.request(method: :get, path: "/test", query: "t=1") }
+      expect(response.body).to eq("GET OK")
+      expect(notifications).to eq [{http_method: :get, url: url, uri: URI("#{url}?t=1"), status_code: 200, count: 1, client: "excon"}]
+    end
   end
 end

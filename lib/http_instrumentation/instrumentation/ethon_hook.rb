@@ -61,14 +61,23 @@ module HTTPInstrumentation
 
         def perform(*args)
           HTTPInstrumentation.instrument("ethon") do |payload|
+            payload[:http_method] = @http_instrumentation_method
+            begin
+              payload[:url] = (@http_instrumentation_url || url)
+            rescue
+              payload[:url] = @http_instrumentation_url
+            end
+            # Clear the request info so it isn't reported again if the handle
+            # is reused without going through http_request.
+            @http_instrumentation_method = nil
+            @http_instrumentation_url = nil
+
             retval = if HTTPInstrumentation::Instrumentation::EthonHook::Easy.aliased
               perform_without_http_instrumentation(*args)
             else
               super
             end
 
-            payload[:http_method] = @http_instrumentation_method
-            payload[:url] = @http_instrumentation_url
             begin
               payload[:status_code] = response_code
             rescue

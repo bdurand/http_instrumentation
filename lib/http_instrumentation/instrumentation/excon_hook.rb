@@ -31,10 +31,12 @@ module HTTPInstrumentation
 
           begin
             info = params
+            # Merge connection defaults under the per-request params so the
+            # request values win.
             if respond_to?(:connection)
-              info = info.merge(connection)
+              info = connection.merge(params)
             elsif respond_to?(:data)
-              info = info.merge(data)
+              info = data.merge(params)
             end
 
             scheme = info[:scheme]&.downcase

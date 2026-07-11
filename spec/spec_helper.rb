@@ -26,7 +26,7 @@ RSpec.configure do |config|
   config.before(:suite) do
     require "webrick"
 
-    server = WEBrick::HTTPServer.new(Port: 8971, Logger: WEBrick::Log.new("/dev/null"), AccessLog: [])
+    server = WEBrick::HTTPServer.new(Port: 8971, Logger: WEBrick::Log.new(File::NULL), AccessLog: [])
 
     server.mount_proc "/test" do |request, response|
       response.body = "#{request.request_method} OK"

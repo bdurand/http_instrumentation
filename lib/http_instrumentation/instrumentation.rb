@@ -12,6 +12,12 @@ require_relative "instrumentation/typhoeus_hook"
 
 module HTTPInstrumentation
   module Instrumentation
+    # Lock to prevent concurrent calls from installing the same hooks twice;
+    # double aliasing would point the _without_http_instrumentation method at
+    # the instrumented method itself, causing infinite recursion.
+    INSTRUMENT_LOCK = Mutex.new
+    private_constant :INSTRUMENT_LOCK
+
     class << self
       # Helper method to add an instrumentation module to methods on a class. The
       # methods must be defined in the instrumentation module.
@@ -23,31 +29,42 @@ module HTTPInstrumentation
       # may have already prepended the methods. Aliasing is the default strategy because
       # prepending after aliasing will work, but aliasing after prepending will not.
       def instrument!(klass, instrumentation_module, methods)
-        return if klass.include?(instrumentation_module)
+        INSTRUMENT_LOCK.synchronize do
+          return if klass.include?(instrumentation_module)
 
-        methods = Array(methods).collect(&:to_sym)
+          methods = Array(methods).collect(&:to_sym)
 
-        if HTTPInstrumentation.force_prepend? || methods_prepended?(klass, methods)
-          klass.prepend(instrumentation_module)
-          instrumentation_module.aliased = false
-        else
-          Array(methods).each do |method|
-            instrumentation_module.alias_method("#{method}_with_http_instrumentation", method)
+          if HTTPInstrumentation.force_prepend? || methods_prepended?(klass, methods)
+            klass.prepend(instrumentation_module)
+            instrumentation_module.aliased = false
+          else
+            methods.each do |method|
+              instrumentation_module.alias_method("#{method}_with_http_instrumentation", method)
+            end
+
+            klass.include(instrumentation_module)
+
+            methods.each do |method|
+              next if defines_method?(klass, "#{method}_without_http_instrumentation")
+
+              klass.alias_method("#{method}_without_http_instrumentation", method)
+              klass.alias_method(method, "#{method}_with_http_instrumentation")
+            end
+
+            instrumentation_module.aliased = true
           end
-
-          klass.include(instrumentation_module)
-
-          Array(methods).each do |method|
-            klass.alias_method("#{method}_without_http_instrumentation", method)
-            klass.alias_method(method, "#{method}_with_http_instrumentation")
-          end
-
-          instrumentation_module.aliased = true
         end
       end
 
       private
 
+      # Returns true if any of the methods are defined in a module in the class's
+      # ancestry rather than directly on the class itself. This covers both modules
+      # prepended in front of the class and modules included behind it. In either
+      # case the aliasing strategy cannot be used: including the instrumentation
+      # module would insert it ahead of the module that defines the method, so
+      # aliasing the method afterward would capture the instrumented method itself
+      # and cause infinite recursion.
       def methods_prepended?(klass, methods)
         prepended = false
 
@@ -60,6 +77,10 @@ module HTTPInstrumentation
         end
 
         prepended
+      end
+
+      def defines_method?(klass, method)
+        klass.method_defined?(method) || klass.private_method_defined?(method)
       end
     end
   end
