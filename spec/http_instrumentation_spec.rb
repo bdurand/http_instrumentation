@@ -3,6 +3,44 @@
 require_relative "spec_helper"
 
 describe HTTPInstrumentation do
+  describe "initialize!" do
+    let(:hooks) do
+      {
+        curb: HTTPInstrumentation::Instrumentation::CurbHook,
+        ethon: HTTPInstrumentation::Instrumentation::EthonHook,
+        excon: HTTPInstrumentation::Instrumentation::ExconHook,
+        http: HTTPInstrumentation::Instrumentation::HTTPHook,
+        httpclient: HTTPInstrumentation::Instrumentation::HTTPClientHook,
+        httpx: HTTPInstrumentation::Instrumentation::HTTPXHook,
+        net_http: HTTPInstrumentation::Instrumentation::NetHTTPHook,
+        patron: HTTPInstrumentation::Instrumentation::PatronHook,
+        typhoeus: HTTPInstrumentation::Instrumentation::TyphoeusHook
+      }
+    end
+
+    it "instruments all libraries except the ones in the except option" do
+      hooks.each do |name, hook|
+        if name == :curb
+          expect(hook).to_not receive(:instrument!)
+        else
+          expect(hook).to receive(:instrument!)
+        end
+      end
+      HTTPInstrumentation.initialize!(except: [:curb])
+    end
+
+    it "instruments only the libraries in the only option" do
+      hooks.each do |name, hook|
+        if name == :net_http
+          expect(hook).to receive(:instrument!)
+        else
+          expect(hook).to_not receive(:instrument!)
+        end
+      end
+      HTTPInstrumentation.initialize!(only: [:net_http])
+    end
+  end
+
   describe "instrument" do
     it "converts to client name to a string" do
       data = HTTPInstrumentation.instrument(:test) do |payload|
@@ -74,6 +112,26 @@ describe HTTPInstrumentation do
         payload
       end
       expect(data[:uri]).to eq(URI("http://example.com?t=1"))
+    end
+
+    it "handles relative URLs in the payload" do
+      data = HTTPInstrumentation.instrument(:test) do |payload|
+        payload[:url] = "/api/foo?t=1"
+        payload
+      end
+      expect(data[:url]).to eq("/api/foo")
+      expect(data[:uri]).to eq(URI("/api/foo?t=1"))
+    end
+
+    it "sets the count in the payload even if the block raises an error" do
+      payloads = capture_notifications do
+        expect {
+          HTTPInstrumentation.instrument(:test) { raise "boom" }
+        }.to raise_error("boom")
+      end
+      expect(payloads.size).to eq(1)
+      expect(payloads.first[:client]).to eq("test")
+      expect(payloads.first[:count]).to eq(1)
     end
 
     it "handles bad URLs in the payload" do

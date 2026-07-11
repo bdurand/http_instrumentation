@@ -21,6 +21,8 @@ This gem adds instrumentation to a variety of the most commonly used Ruby HTTP c
 
 Note that several other popular HTTP client libraries like [Faraday](https://github.com/lostisland/faraday), [HTTParty](https://github.com/jnunemaker/httparty), and [RestClient](https://github.com/rest-client/rest-client) are built on top of these low level libraries.
 
+A few code paths are not instrumented: curb requests that don't go through `Curl::Easy#http` (e.g. the native `http_get` and `http_post` helpers) and httpclient streaming responses.
+
 ## Usage
 
 To capture information about HTTP requests, simply subscribe to the `request.http` events with [ActiveSupport notifications](https://api.rubyonrails.org/classes/ActiveSupport/Notifications.html) (note that you should really use `monotonic_subscribe` instead of `subscribe` to avoid issues with clock adjustments).
@@ -63,6 +65,17 @@ Net::HTTP.get(URI("https://example.com/info"))
 # Multiple, concurrent requests
 HTTPX.get("https://example.com/r1", "https://example.com/r2")
 # => HTTP request: client: httpx, count: 2, duration: 150ms
+```
+
+### Instrumenting Libraries Loaded Later
+
+All supported libraries that have already been loaded are automatically instrumented when this gem is required. Instrumentation cannot be removed once it has been installed.
+
+If an HTTP client library is loaded after this gem, you can call `HTTPInstrumentation.initialize!` again to instrument it. The `only` and `except` options can be used to limit which libraries are instrumented.
+
+```ruby
+require "httpx"
+HTTPInstrumentation.initialize!(only: [:httpx])
 ```
 
 ### Security
@@ -117,7 +130,7 @@ You can also take advantage of the existing instrumentation and just override th
 ```ruby
 class MyHttpClient
   def get(url)
-    HTTPInstrumentation.client("my_client")
+    HTTPInstrumentation.client("my_client") do
       Net::HTTP.get(URI(url))
     end
   end
