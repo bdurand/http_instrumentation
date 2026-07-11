@@ -70,10 +70,10 @@ jobs:
           - ruby: "ruby"
             appraisal: "with_open_telemetry"
     steps:
-      - name: Install dependencies
-        run: sudo apt-get install libcurl4-openssl-dev
       - name: Checkout
         uses: actions/checkout@v6
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
       - name: Ruby CI
         uses: bdurand/github-actions/ruby-ci@v1.0.2
         with:
