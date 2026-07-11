@@ -45,6 +45,8 @@ module HTTPInstrumentation
             payload[:url] = url
             payload[:status_code] = response.code
           rescue
+            # Instrumentation must never break the request; if the payload can't
+            # be built, return the response without the extra fields.
           end
 
           response
