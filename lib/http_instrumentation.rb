@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "active_support"
 require "active_support/notifications"
 
 require_relative "http_instrumentation/instrumentation"
@@ -13,7 +14,6 @@ module HTTPInstrumentation
     :httpclient,
     :httpx,
     :net_http,
-    :net_http2,
     :patron,
     :typhoeus
   ].freeze
@@ -29,7 +29,7 @@ module HTTPInstrumentation
     # @param except [Array<Symbol>] List of libraries to not instrument.
     # @return [void]
     def initialize!(only: nil, except: nil)
-      list = only || IMPLEMENTATIONS
+      list = Array(only || IMPLEMENTATIONS)
       list -= Array(except) if except
 
       Instrumentation::CurbHook.instrument! if list.include?(:curb)

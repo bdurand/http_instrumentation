@@ -21,10 +21,10 @@ module HTTPInstrumentation
         attr_accessor :aliased
       end
 
-      def do_get_block(request, *args)
+      def do_get_block(request, *args, &block)
         HTTPInstrumentation.instrument("httpclient") do |payload|
           response = if HTTPInstrumentation::Instrumentation::HTTPClientHook.aliased
-            do_get_block_without_http_instrumentation(request, *args)
+            do_get_block_without_http_instrumentation(request, *args, &block)
           else
             super
           end

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 1.0.2
 
 ### Fixed
+- Requiring the gem now loads the ActiveSupport framework itself instead of just `active_support/notifications`, which is not self-sufficient on ActiveSupport 7+ and raised `NameError: uninitialized constant ActiveSupport::IsolatedExecutionState` on the first request if the host application had not already loaded ActiveSupport.
+- The httpclient and excon instrumentation now forward blocks passed to the instrumented methods, so streaming response blocks are no longer silently ignored when the aliasing strategy is used.
+- The excon instrumentation now encodes query parameters passed as a hash when building the URL for the event payload, so `access_token` parameters are properly stripped from the `:uri` payload value instead of leaking through in unparseable form.
+- The aliased flag on instrumentation modules is now set before the instrumented method is swapped in, so a request on another thread can no longer hit a window during installation where it would raise `NoMethodError`.
+- Removed the nonexistent `:net_http2` entry from `HTTPInstrumentation::IMPLEMENTATIONS`; no hook for it was ever implemented.
+- `HTTPInstrumentation.initialize!` now accepts a single symbol for the `only` option instead of raising `NoMethodError`.
 - The `except` option to `HTTPInstrumentation.initialize!` now excludes the listed libraries instead of instrumenting only those libraries.
 - Requests made with relative URLs (e.g. a patron session with a `base_url`) no longer raise `URI::InvalidURIError` from the instrumentation after the request completes.
 - Installing the instrumentation is now protected by a mutex so concurrent calls to `initialize!` cannot install the aliased methods twice, which would have caused infinite recursion on subsequent requests.

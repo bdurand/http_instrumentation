@@ -44,14 +44,20 @@ module HTTPInstrumentation
 
             klass.include(instrumentation_module)
 
-            methods.each do |method|
-              next if defines_method?(klass, "#{method}_without_http_instrumentation")
+            swap_methods = methods.reject { |method| defines_method?(klass, "#{method}_without_http_instrumentation") }
 
+            swap_methods.each do |method|
               klass.alias_method("#{method}_without_http_instrumentation", method)
-              klass.alias_method(method, "#{method}_with_http_instrumentation")
             end
 
+            # The aliased flag must be set before the instrumented methods are
+            # swapped in; a call landing in between would take the super branch
+            # and raise NoMethodError since the module was included, not prepended.
             instrumentation_module.aliased = true
+
+            swap_methods.each do |method|
+              klass.alias_method(method, "#{method}_with_http_instrumentation")
+            end
           end
         end
       end

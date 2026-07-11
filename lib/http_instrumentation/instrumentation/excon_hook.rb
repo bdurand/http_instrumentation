@@ -21,10 +21,10 @@ module HTTPInstrumentation
         attr_accessor :aliased
       end
 
-      def request(params = {})
+      def request(params = {}, &block)
         HTTPInstrumentation.instrument("excon") do |payload|
           response = if HTTPInstrumentation::Instrumentation::ExconHook.aliased
-            request_without_http_instrumentation(params)
+            request_without_http_instrumentation(params, &block)
           else
             super
           end
@@ -42,8 +42,10 @@ module HTTPInstrumentation
             scheme = info[:scheme]&.downcase
             default_port = ((scheme == "https") ? 443 : 80)
             port = info[:port]
+            query = info[:query]
+            query = URI.encode_www_form(query) if query.is_a?(Hash)
             payload[:http_method] = (info[:http_method] || info[:method])
-            payload[:url] = "#{scheme}://#{info[:host]}#{":#{port}" unless port == default_port}#{info[:path]}#{"?#{info[:query]}" unless info[:query].to_s.empty?}"
+            payload[:url] = "#{scheme}://#{info[:host]}#{":#{port}" unless port == default_port}#{info[:path]}#{"?#{query}" unless query.to_s.empty?}"
             payload[:status_code] = response.status
           rescue
           end
