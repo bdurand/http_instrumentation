@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "../../spec_helper"
+require "spec_helper"
 
 if defined?(Faraday)
-  describe "Faraday" do
+  RSpec.describe "Faraday" do
     let(:url) { TEST_URL }
 
     it "instruments requests via net/http" do

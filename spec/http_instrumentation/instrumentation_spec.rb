@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "../spec_helper"
+require "spec_helper"
 
 unless HTTPInstrumentation.force_prepend?
-  describe HTTPInstrumentation::Instrumentation do
+  RSpec.describe HTTPInstrumentation::Instrumentation do
     class TestClassBase
       attr_reader :trace
 

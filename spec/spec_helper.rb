@@ -21,7 +21,11 @@ require "active_support"
 require_relative "other_gems_setup"
 
 RSpec.configure do |config|
+  config.warnings = true
+  config.disable_monkey_patching!
+  config.default_formatter = "doc" if config.files_to_run.one?
   config.order = :random
+  Kernel.srand config.seed
 
   server = nil
 
@@ -50,6 +54,16 @@ def test_http_request
     response = yield
   end
   [response, payloads]
+end
+
+# Run a block with Ruby warnings turned off. Used when a spec has to exercise
+# an API the client gem has deprecated so the deprecation notice does not
+# clutter the test output.
+def silence_warnings
+  verbose, $VERBOSE = $VERBOSE, nil
+  yield
+ensure
+  $VERBOSE = verbose
 end
 
 def capture_notifications

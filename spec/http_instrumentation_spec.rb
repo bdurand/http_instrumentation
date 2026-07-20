@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "spec_helper"
+require "spec_helper"
 
-describe HTTPInstrumentation do
+RSpec.describe HTTPInstrumentation do
   describe "initialize!" do
     let(:hooks) do
       {

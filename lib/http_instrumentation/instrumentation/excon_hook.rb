@@ -33,10 +33,12 @@ module HTTPInstrumentation
             info = params
             # Merge connection defaults under the per-request params so the
             # request values win.
-            if respond_to?(:connection)
-              info = connection.merge(params)
-            elsif respond_to?(:data)
+            # #data is the current accessor; #connection is a deprecated alias
+            # kept only for older versions of the gem.
+            if respond_to?(:data)
               info = data.merge(params)
+            elsif respond_to?(:connection)
+              info = connection.merge(params)
             end
 
             scheme = info[:scheme]&.downcase

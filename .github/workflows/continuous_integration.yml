@@ -42,13 +42,13 @@ jobs:
           - ruby: "2.6"
             appraisal: "http_1.0"
             frozen_strings: false
-          - ruby: "2.7"
+          - ruby: "2.6"
             appraisal: "http_2.0"
             frozen_strings: false
-          - ruby: "2.7"
+          - ruby: "2.6"
             appraisal: "http_3.0"
             frozen_strings: false
-          - ruby: "2.7"
+          - ruby: "2.6"
             appraisal: "http_4.0"
             frozen_strings: false
           - ruby: "3.1"
@@ -84,7 +84,7 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
       - name: Ruby CI
-        uses: bdurand/github-actions/ruby-ci@v1.0.3
+        uses: bdurand/github-actions/ruby-ci@b7560883d5f8557f5d69fe8bd82721bbb5ed76df # v1.0.4
         with:
           ruby: ${{ matrix.ruby }}
           appraisal: ${{ matrix.appraisal }}
