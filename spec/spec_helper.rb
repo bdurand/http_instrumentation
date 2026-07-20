@@ -56,6 +56,16 @@ def test_http_request
   [response, payloads]
 end
 
+# Run a block with Ruby warnings turned off. Used when a spec has to exercise
+# an API the client gem has deprecated so the deprecation notice does not
+# clutter the test output.
+def silence_warnings
+  verbose, $VERBOSE = $VERBOSE, nil
+  yield
+ensure
+  $VERBOSE = verbose
+end
+
 def capture_notifications
   payloads = []
 

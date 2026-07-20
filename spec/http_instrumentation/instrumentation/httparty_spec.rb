@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "../../spec_helper"
+require "spec_helper"
 
 if defined?(HTTParty)
-  describe "HTTParty" do
+  RSpec.describe "HTTParty" do
     let(:url) { TEST_URL }
 
     it "instruments requests via net/http" do

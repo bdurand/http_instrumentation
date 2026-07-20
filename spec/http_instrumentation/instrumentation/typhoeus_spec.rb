@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "../../spec_helper"
+require "spec_helper"
 
 if HTTPInstrumentation::Instrumentation::TyphoeusHook.installed?
-  describe HTTPInstrumentation::Instrumentation::TyphoeusHook do
+  RSpec.describe HTTPInstrumentation::Instrumentation::TyphoeusHook do
     let(:url) { TEST_URL }
 
     it "instruments GET requests" do

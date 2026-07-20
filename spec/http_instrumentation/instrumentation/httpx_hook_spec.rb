@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "../../spec_helper"
+require "spec_helper"
 
 if HTTPInstrumentation::Instrumentation::HTTPXHook.installed?
-  describe HTTPInstrumentation::Instrumentation::HTTPXHook do
+  RSpec.describe HTTPInstrumentation::Instrumentation::HTTPXHook do
     let(:url) { TEST_URL }
 
     it "instruments GET requests" do

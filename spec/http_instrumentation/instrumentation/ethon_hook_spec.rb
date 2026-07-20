@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "../../spec_helper"
+require "spec_helper"
 
 if HTTPInstrumentation::Instrumentation::EthonHook.installed?
-  describe HTTPInstrumentation::Instrumentation::EthonHook do
+  RSpec.describe HTTPInstrumentation::Instrumentation::EthonHook do
     let(:url) { TEST_URL }
 
     it "instruments GET requests" do

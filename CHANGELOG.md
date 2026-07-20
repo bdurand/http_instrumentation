@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.0.3
+
+### Fixed
+- The excon instrumentation now reads the connection defaults from `Excon::Connection#data` instead of the deprecated `#connection` alias, so building the event payload no longer emits a deprecation warning on current versions of the gem. The `#connection` accessor is still used as a fallback for older versions.
+
 ## 1.0.2
 
 ### Fixed

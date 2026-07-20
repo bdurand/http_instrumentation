@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "../../spec_helper"
+require "spec_helper"
 
 if HTTPInstrumentation::Instrumentation::PatronHook.installed?
-  describe HTTPInstrumentation::Instrumentation::PatronHook do
+  RSpec.describe HTTPInstrumentation::Instrumentation::PatronHook do
     let(:url) { TEST_URL }
 
     it "instruments GET requests" do

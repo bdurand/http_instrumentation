@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "../../spec_helper"
+require "spec_helper"
 
 if HTTPInstrumentation::Instrumentation::ExconHook.installed?
-  describe HTTPInstrumentation::Instrumentation::ExconHook do
+  RSpec.describe HTTPInstrumentation::Instrumentation::ExconHook do
     let(:url) { TEST_URL }
 
     it "instruments GET requests" do
@@ -32,7 +32,11 @@ if HTTPInstrumentation::Instrumentation::ExconHook.installed?
 
     it "passes response blocks through to the client" do
       chunks = []
-      response, notifications = test_http_request { Excon.get(url) { |chunk, remaining, total| chunks << chunk } }
+      # Excon deprecated passing a block in favor of :response_block, but the
+      # hook still has to hand it off rather than swallow it.
+      response, notifications = silence_warnings do
+        test_http_request { Excon.get(url) { |chunk, remaining, total| chunks << chunk } }
+      end
       expect(response.status).to eq(200)
       expect(chunks.join).to eq("GET OK")
       expect(notifications).to eq [{http_method: :get, url: url, uri: URI(url), status_code: 200, count: 1, client: "excon"}]
