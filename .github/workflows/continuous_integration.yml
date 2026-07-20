@@ -42,13 +42,13 @@ jobs:
           - ruby: "2.6"
             appraisal: "http_1.0"
             frozen_strings: false
-          - ruby: "2.7"
+          - ruby: "2.6"
             appraisal: "http_2.0"
             frozen_strings: false
-          - ruby: "2.7"
+          - ruby: "2.6"
             appraisal: "http_3.0"
             frozen_strings: false
-          - ruby: "2.7"
+          - ruby: "2.6"
             appraisal: "http_4.0"
             frozen_strings: false
           - ruby: "3.1"
