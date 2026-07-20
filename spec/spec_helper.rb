@@ -21,7 +21,11 @@ require "active_support"
 require_relative "other_gems_setup"
 
 RSpec.configure do |config|
+  config.warnings = true
+  config.disable_monkey_patching!
+  config.default_formatter = "doc" if config.files_to_run.one?
   config.order = :random
+  Kernel.srand config.seed
 
   server = nil
 
