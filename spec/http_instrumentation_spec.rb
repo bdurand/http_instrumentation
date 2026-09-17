@@ -169,6 +169,15 @@ RSpec.describe HTTPInstrumentation do
       expect(data[:url]).to eq("localhost:8080/path")
       expect(data[:uri]).to eq(URI("localhost:8080/path"))
     end
+
+    it "converts a url with an empty host to a string without raising an error" do
+      data = HTTPInstrumentation.instrument(:test) do |payload|
+        payload[:url] = URI("http:///path")
+        payload
+      end
+      expect(data[:url]).to eq("http:///path")
+      expect(data).to_not include(:uri)
+    end
   end
 
   describe "silence" do
