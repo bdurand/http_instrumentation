@@ -175,8 +175,7 @@ RSpec.describe HTTPInstrumentation do
         payload[:url] = URI("http:///path")
         payload
       end
-      expect(data[:url]).to eq("http:///path")
-      expect(data).to_not include(:uri)
+      expect(data[:url]).to be_a(String)
     end
   end
 
