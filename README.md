@@ -33,12 +33,12 @@ The payload on event notifications for all HTTP requests will include:
 
 If a single HTTP request was made, then these keys will exist as well:
 
-* `:uri` - The URI for the request
-* `:url` - The URL for the request with any query string stripped off
-* `:http_method` - The HTTP method for the request
-* `:status_code` - The numeric HTTP status code for the response
+* `:uri` - The URI for the request (`URI`)
+* `:url` - The URL for the request with any query string stripped off (`String`)
+* `:http_method` - The HTTP method for the request (`Symbol`)
+* `:status_code` - The numeric HTTP status code for the response (`Integer`)
 
-These additional values will not be present if multiple, concurrent requests were made. Only the typhoeus, ethon, and httpx libraries support making concurrent requests.
+These additional values will not be present if multiple, concurrent requests were made. Only the typhoeus, ethon, and httpx libraries support making concurrent requests. Any of the values can also be nil if the request was corrupted or invalid.
 
 ```ruby
 ActiveSupport::Notifications.monotonic_subscribe("request.http") do |*args|
