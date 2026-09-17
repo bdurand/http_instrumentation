@@ -148,17 +148,19 @@ module HTTPInstrumentation
     end
 
     # Remove any sensitive information from the given URL. Also normalizes
-    # the host and protocol by downcasing them.
+    # the host and protocol by downcasing them. Returns nil if the value
+    # cannot be parsed or sanitized as a URI.
     #
     # @param url [URI] the sanitized URL
     def sanitized_uri(url)
       return nil if url.nil?
 
-      begin
-        uri = URI(url.to_s)
-      rescue URI::Error
-        return nil
-      end
+      uri = URI(url.to_s)
+
+      # Opaque URIs (e.g. "localhost:8080/path" parses with scheme "localhost")
+      # have no user, host, or query components to sanitize, and the component
+      # setters raise on them.
+      return uri if uri.opaque
 
       uri.password = nil
       uri.user = nil
@@ -176,6 +178,8 @@ module HTTPInstrumentation
       end
 
       uri
+    rescue URI::Error
+      nil
     end
 
     def uri_without_query_string(uri)

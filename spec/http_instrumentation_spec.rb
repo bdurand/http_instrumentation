@@ -160,6 +160,23 @@ RSpec.describe HTTPInstrumentation do
       end
       expect(data[:status_code]).to eq(200)
     end
+
+    it "converts an opaque url to a string without raising an error" do
+      data = HTTPInstrumentation.instrument(:test) do |payload|
+        payload[:url] = URI("localhost:8080/path")
+        payload
+      end
+      expect(data[:url]).to eq("localhost:8080/path")
+      expect(data[:uri]).to eq(URI("localhost:8080/path"))
+    end
+
+    it "converts a url with an empty host to a string without raising an error" do
+      data = HTTPInstrumentation.instrument(:test) do |payload|
+        payload[:url] = URI("http:///path")
+        payload
+      end
+      expect(data[:url]).to be_a(String)
+    end
   end
 
   describe "silence" do

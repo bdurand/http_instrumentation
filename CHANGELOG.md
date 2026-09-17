@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.0.4
+
+### Fixed
+- A request URL that parses as an opaque URI (e.g. `localhost:8080/path`, which parses with the scheme `localhost`) or that has an empty host (e.g. `http:///path`) no longer raises a `URI::Error` from the instrumentation after the request completes. Because the error was raised while normalizing the event payload, the published event also kept the raw `:url` value (such as a `URI` object) instead of a string.
+
 ## 1.0.3
 
 ### Fixed
